@@ -5,21 +5,31 @@ import threading
 import time
 from updateArd import updateArdData
 from updateAirKorea import updateAirKRData
+from updateWeatherData import updateOutdoorWeather
+import os
+
+import sys
+sys.setrecursionlimit(100000)
 
 win=Tk()
 
 def exitProgram():
-	print("User Aborted Program")
+	print("Entering Maintenance Mode!")
 	win.quit()
 	return 0
 	
-def updateData():
+def turnOff():
+	print("Turning Off System. Good Bye!")
+	win.quit()
+	os.system("sudo shutdown -h now")
+	return 0
+	
+def updateIndoorData():
 	indoorDataRaw = updateArdData()
-	outdoorDataRaw = updateAirKRData()
 	indoorDataParse = indoorDataRaw.decode().split(',')
 		
-	indoorDustShow.configure(text = "미세먼지 : "+indoorDataParse[3]+"㎍/㎡")
-	indoorFineDustShow.configure(text = "초미세먼지 : "+indoorDataParse[4]+"㎍/㎍")
+	indoorDustShow.configure(text = "미세먼지 : "+indoorDataParse[1]+"㎍/㎡")
+	indoorFineDustShow.configure(text = "초미세먼지 : "+indoorDataParse[2]+"㎍/㎍")
 	indoorHumidShow.configure(text = "습도 : " + indoorDataParse[5] + "%")
 	indoorTempShow.configure(text = "온도 : " + indoorDataParse[6] + "℃")
 	
@@ -32,11 +42,11 @@ def updateData():
 	else:
 		indoorPM2Grade = 4
 	
-	if(int(indoorDataParse[2])<16):
+	if(int(indoorDataParse[2])<31):
 		indoorPM10Grade = 1
-	elif(int(indoorDataParse[2])<51):
+	elif(int(indoorDataParse[2])<82):
 		indoorPM10Grade = 2
-	elif(int(indoorDataParse[2])<101):
+	elif(int(indoorDataParse[2])<151):
 		indoorPM10Grade = 3
 	else:
 		indoorPM10Grade = 4
@@ -44,21 +54,49 @@ def updateData():
 	print(indoorDustTotalGrade)
 
 	if(indoorDustTotalGrade==1):
-		indoorDustImg.img=PhotoImage(file = 'good.gif')
+		indoorDustImg.img=PhotoImage(file = '/home/pi/Desktop/DustDetector/good.gif')
 		indoorDustImg.config(image = indoorDustImg.img, bg='#404040')	
 	elif(indoorDustTotalGrade==2):
-		indoorDustImg.img=PhotoImage(file = 'normal.gif')
+		indoorDustImg.img=PhotoImage(file = '/home/pi/Desktop/DustDetector/normal.gif')
 		indoorDustImg.config(image = indoorDustImg.img, bg='#404040')	
 	elif(indoorDustTotalGrade==3):
-		indoorDustImg.img=PhotoImage(file = 'bad.gif')
+		indoorDustImg.img=PhotoImage(file = '/home/pi/Desktop/DustDetector/bad.gif')
 		indoorDustImg.config(image = indoorDustImg.img,bg='#404040')	
-	elif(indoorDustToatalGrade==4):
-		indoorDustImg.img=PhotoImage(file = 'worst.gif')
+	elif(indoorDustTotalGrade==4):
+		indoorDustImg.img=PhotoImage(file = '/home/pi/Desktop/DustDetector/worst.gif')
 		indoorDustImg.config(image = indoorDustImg.img,bg='#404040')	
 	else:
-		indoorDustImg.img=PhotoImage(file = 'hmm.gif')
+		indoorDustImg.img=PhotoImage(file = '/home/pi/Desktop/DustDetector/hmm.gif')
 		indoorDustImg.config(image = indoorDustImg.img,bg='#404040')
-	outdoorDustShow.configure(text = outdoorDataRaw)
+	
+def updateOutdoorDustData():
+		outdoorDataRaw = updateAirKRData()
+		outdoorDataParse = outdoorDataRaw.split(',')
+		outdoorDustShow.configure(text = "미세먼지 : "+outdoorDataParse[1]+"㎍/㎡")
+		outdoorFineDustShow.configure(text = "초미세먼지 : "+outdoorDataParse[2]+"㎍/㎍")
+		
+		outdoorDustTotalGrade = max(outdoorDataParse[3],outdoorDataParse[4])
+		if(outdoorDustTotalGrade=='1'):
+			outdoorDustImg.img=PhotoImage(file = '/home/pi/Desktop/DustDetector/good.gif')
+			outdoorDustImg.config(image = outdoorDustImg.img, bg='#404040')	
+		elif(outdoorDustTotalGrade=='2'):
+			outdoorDustImg.img=PhotoImage(file = '/home/pi/Desktop/DustDetector/normal.gif')
+			outdoorDustImg.config(image = outdoorDustImg.img, bg='#404040')	
+		elif(outdoorDustTotalGrade=='3'):
+			outdoorDustImg.img=PhotoImage(file = '/home/pi/Desktop/DustDetector/bad.gif')
+			outdoorDustImg.config(image = outdoorDustImg.img,bg='#404040')	
+		elif(outdoorDustTotalGrade=='4'):
+			outdoorDustImg.img=PhotoImage(file = '/home/pi/Desktop/DustDetector/worst.gif')
+			outdoorDustImg.config(image = outdoorDustImg.img,bg='#404040')	
+		else:
+			outdoorDustImg.img=PhotoImage(file = '/home/pi/Desktop/DustDetector/hmm.gif')
+			outdoorDustImg.config(image = outdoorDustImg.img,bg='#404040')
+
+def updateOutdoorWeatherData():
+	outdoorWeatherDataRaw = updateOutdoorWeather()
+	outdoorWeatherDataParse = outdoorWeatherDataRaw.split(',')
+	outdoorHumidShow.configure(text = "강수량 : " + outdoorWeatherDataParse[1] + "mm")
+	outdoorTempShow.configure(text = "온도 : " + outdoorWeatherDataParse[2] + "℃")
 	
 def showAll():
 	indoorDustImg.place(x=220,y=210)
@@ -124,9 +162,16 @@ def showOutdoor():
 	outdoorTempShow.place(x=485, y=425)
 
 def timeUpdate():
-	timeShow.configure(text = time.strftime('%Y/%m/%d %a %p %I:%M;%S',time.localtime(time.time())))
+	timeShow.configure(text = time.strftime('%Y/%m/%d %a %p %I:%M:%S',time.localtime(time.time())))
 	timeShow.pack(side="top",anchor="e")
-	updateData()
+	nowMin = time.strftime('%M', time.localtime(time.time()))
+	nowSec = time.strftime('%S', time.localtime(time.time()))
+	updateIndoorData()
+	
+	if(nowMin=='00' and nowSec=='00'):
+		updateOutdoorDustData()
+	if(nowMin=='45' and nowSec=='00'):
+		updateOutdoorWeatherData()
 	threading.Timer(1,timeUpdate).start()
 
 def noticeUpdate():
@@ -137,27 +182,29 @@ win.geometry("800x480")
 win.attributes("-fullscreen",True)
 win.configure(bg='#404040')
 
-showAllButtonImg = PhotoImage(file='all.gif')
+showAllButtonImg = PhotoImage(file='/home/pi/Desktop/DustDetector/all.gif')
 showAllButton = Button(win, image=showAllButtonImg, command = showAll, bg='#404040', highlightthickness=0, bd=0)
 showAllButton.place(x=120, y=70)
 
-showIndoorButtonImg = PhotoImage(file='indoor.gif')
+showIndoorButtonImg = PhotoImage(file='/home/pi/Desktop/DustDetector/indoor.gif')
 showIndoorButton = Button(win, image=showIndoorButtonImg, command = showIndoor, bg='#404040', highlightthickness=0, bd=0)
 showIndoorButton.place(x=360, y=70)
 
-showOutdoorButtonImg = PhotoImage(file='outdoor.gif')
+showOutdoorButtonImg = PhotoImage(file='/home/pi/Desktop/DustDetector/outdoor.gif')
 showOutdoorButton = Button(win, image=showOutdoorButtonImg, command = showOutdoor, bg='#404040', highlightthickness=0, bd=0)
 showOutdoorButton.place(x=600, y=70)
 
-exitButton = Button(win, text="종료",command=exitProgram,height=1,width=5, bg='#404040', fg='#FFFFFF', highlightthickness=0)
+exitButton = Button(win, text="종료",command=turnOff,height=1,width=5, bg='#404040', fg='#FFFFFF', highlightthickness=0)
 exitButton.place(x=720, y = 440)
+maintButton = Button(win,text="정비모드",command=exitProgram,height=1,width=5,bg='#404040',fg='#FFFFFF',highlightthickness=0)
+maintButton.place(x=5,y=45)
 
 indoorDustShow = Label(win, text='내부 미세먼지 정보')
 indoorDustShow.configure(bg='#404040',fg='#FFFFFF')
 indoorFineDustShow = Label(win, text='내부 초미세먼지 정보')
 indoorFineDustShow.configure(bg='#404040',fg='#FFFFFF')
 indoorDustImg = Label(win)
-indoorDustImg.img=PhotoImage(file = 'hmm.gif')
+indoorDustImg.img=PhotoImage(file = '/home/pi/Desktop/DustDetector/hmm.gif')
 indoorDustImg.config(image = indoorDustImg.img)
 
 outdoorDustShow = Label(win, text='외부 미세먼지 정보')
@@ -165,29 +212,29 @@ outdoorDustShow.configure(bg='#404040',fg='#FFFFFF')
 outdoorFineDustShow = Label(win, text='외부 초미세먼지 정보')
 outdoorFineDustShow.configure(bg='#404040',fg='#FFFFFF')
 outdoorDustImg = Label(win)
-outdoorDustImg.img=PhotoImage(file = 'hmm.gif')
+outdoorDustImg.img=PhotoImage(file = '/home/pi/Desktop/DustDetector/hmm.gif')
 outdoorDustImg.config(image = outdoorDustImg.img)
 
 indoorHumidImg = Label(win)
-indoorHumidImg.img = PhotoImage(file='humid.gif')
+indoorHumidImg.img = PhotoImage(file='/home/pi/Desktop/DustDetector/humid.gif')
 indoorHumidImg.config(image=indoorHumidImg.img, bg='#404040')
 indoorHumidShow = Label(win, text='내부 습도')
 indoorHumidShow.configure(bg='#404040', fg='#FFFFFF')
 
 indoorTempImg = Label(win)
-indoorTempImg.img = PhotoImage(file='temp.gif')
+indoorTempImg.img = PhotoImage(file='/home/pi/Desktop/DustDetector/temp.gif')
 indoorTempImg.config(image=indoorTempImg.img, bg='#404040')
 indoorTempShow = Label(win, text='내부 온도')
 indoorTempShow.configure(bg='#404040', fg='#FFFFFF')
 
 outdoorHumidImg = Label(win)
-outdoorHumidImg.img = PhotoImage(file='humid.gif')
+outdoorHumidImg.img = PhotoImage(file='/home/pi/Desktop/DustDetector/humid.gif')
 outdoorHumidImg.config(image=outdoorHumidImg.img, bg='#404040')
 outdoorHumidShow = Label(win, text='외부 습도')
 outdoorHumidShow.configure(bg='#404040', fg='#FFFFFF')
 
 outdoorTempImg = Label(win)
-outdoorTempImg.img = PhotoImage(file='temp.gif')
+outdoorTempImg.img = PhotoImage(file='/home/pi/Desktop/DustDetector/temp.gif')
 outdoorTempImg.config(image=outdoorTempImg.img, bg='#404040')
 outdoorTempShow = Label(win, text='외부 온도')
 outdoorTempShow.configure(bg='#404040', fg='#FFFFFF')
@@ -197,9 +244,11 @@ timeShow.configure(bg='#404040', fg='#FFFFFF')
 noticeShow = Label(win, text = '공지사항은 여기에 표시됩니다!')
 noticeShow.configure(bg='#404040', fg='#FFFFFF')
 
-updateData()
+updateIndoorData()
 showAll()
 timeUpdate()
 noticeUpdate()
+updateOutdoorDustData()
+updateOutdoorWeatherData()
 
 mainloop()
