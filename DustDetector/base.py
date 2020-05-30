@@ -6,6 +6,7 @@ import time
 from updateArd import updateArdData
 from updateAirKorea import updateAirKRData
 from updateWeatherData import updateOutdoorWeather
+from fileIO import indoorLogging
 import os
 
 import sys
@@ -68,6 +69,7 @@ def updateIndoorData():
 	else:
 		indoorDustImg.img=PhotoImage(file = '/home/pi/Desktop/DustDetector/hmm.gif')
 		indoorDustImg.config(image = indoorDustImg.img,bg='#404040')
+	indoorLogging()
 	
 def updateOutdoorDustData():
 		outdoorDataRaw = updateAirKRData()
@@ -166,8 +168,9 @@ def timeUpdate():
 	timeShow.pack(side="top",anchor="e")
 	nowMin = time.strftime('%M', time.localtime(time.time()))
 	nowSec = time.strftime('%S', time.localtime(time.time()))
-	updateIndoorData()
 	
+	if(nowSec=='00'):
+		updateIndoorData()
 	if(nowMin=='00' and nowSec=='00'):
 		updateOutdoorDustData()
 	if(nowMin=='45' and nowSec=='00'):
