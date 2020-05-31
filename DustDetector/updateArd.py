@@ -10,7 +10,6 @@ ard = serial.Serial(port='/dev/ttyS0')
 def updateArdData():
 	if ard.readable():
 		ardData = ard.readline()
-		print(ardData)
 		return(ardData)
 	else:
 		print("Arduino Connection Error!")

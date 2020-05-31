@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas
 M='&stationName=성북구&dataTerm=month&pageNo=1&numOfRows=10'
-key='your key'
+key='nssPTZf343qORyfFp5fbXec%2FX502eaSKp%2BKTX4UooyhaA%2FYK73ovY7GeCf6tXuOcxNqmwMtUD8tzxyFhQmGf1w%3D%3D'
 url='http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?'+M+'&ServiceKey='+key+'&ver=1.3'
 
 
