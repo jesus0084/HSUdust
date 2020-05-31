@@ -8,7 +8,7 @@ nowHour = time.strftime('%H',time.localtime(time.time()))
 nowMin = time.strftime('%M',time.localtime(time.time()))
 x = '60'
 y = '127'
-key='your key'
+key='nssPTZf343qORyfFp5fbXec%2FX502eaSKp%2BKTX4UooyhaA%2FYK73ovY7GeCf6tXuOcxNqmwMtUD8tzxyFhQmGf1w%3D%3D'
 
 if(int(nowMin)<41):
 	nowHour=int(nowHour)-1
