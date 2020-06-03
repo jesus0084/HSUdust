@@ -6,7 +6,8 @@ import time
 from updateArd import updateArdData
 from updateAirKorea import updateAirKRData
 from updateWeatherData import updateOutdoorWeather
-from fileIO import indoorLogging
+from logger import indoorLogging
+from logUploader import uploadLog
 import os
 
 import sys
@@ -166,6 +167,7 @@ def showOutdoor():
 def timeUpdate():
 	timeShow.configure(text = time.strftime('%Y/%m/%d %a %p %I:%M:%S',time.localtime(time.time())))
 	timeShow.pack(side="top",anchor="e")
+	nowHour = time.strftime('%H', time.localtime(time.time()))
 	nowMin = time.strftime('%M', time.localtime(time.time()))
 	nowSec = time.strftime('%S', time.localtime(time.time()))
 	
@@ -175,6 +177,8 @@ def timeUpdate():
 		updateOutdoorDustData()
 	if(nowMin=='45' and nowSec=='00'):
 		updateOutdoorWeatherData()
+	if(nowHour=='23' and nowMin=='59' and nowSec == '59'):
+		uploadLog()
 	threading.Timer(1,timeUpdate).start()
 
 def noticeUpdate():
@@ -182,7 +186,7 @@ def noticeUpdate():
 	
 win.title("My First GUI")
 win.geometry("800x480")
-win.attributes("-fullscreen",True)
+win.attributes("-fullscreen",False)
 win.configure(bg='#404040')
 
 showAllButtonImg = PhotoImage(file='/home/pi/Desktop/DustDetector/all.gif')
@@ -253,5 +257,6 @@ timeUpdate()
 noticeUpdate()
 updateOutdoorDustData()
 updateOutdoorWeatherData()
+uploadLog()
 
 mainloop()

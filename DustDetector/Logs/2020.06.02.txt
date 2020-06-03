@@ -1,0 +1,2 @@
+17:59, PM10:70ug/m^3, PM2.5:70ug/m^3, Humid:27.00%, temp:34.50C
+17:59, PM10:71ug/m^3, PM2.5:71ug/m^3, Humid:27.00%, temp:34.40C
