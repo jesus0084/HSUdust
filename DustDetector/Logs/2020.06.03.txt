@@ -8,3 +8,11 @@
 01:31, PM10: 12ug/m^3, PM2.5: 12ug/m^3, Humid: 36.00%, temp: 33.00C
 01:41, PM10: 12ug/m^3, PM2.5: 12ug/m^3, Humid: 33.00%, temp: 34.10C
 01:43, PM10: 11ug/m^3, PM2.5: 11ug/m^3, Humid: 34.00%, temp: 33.70C
+15:52, PM10: 30ug/m^3, PM2.5: 33ug/m^3, Humid: 59.00%, temp: 25.10C
+15:53, PM10: 27ug/m^3, PM2.5: 27ug/m^3, Humid: 59.00%, temp: 25.70C
+15:56, PM10: 27ug/m^3, PM2.5: 27ug/m^3, Humid: 57.00%, temp: 27.00C
+15:57, PM10: 27ug/m^3, PM2.5: 27ug/m^3, Humid: 57.00%, temp: 27.10C
+15:58, PM10: 27ug/m^3, PM2.5: 27ug/m^3, Humid: 57.00%, temp: 27.20C
+15:59, PM10: 27ug/m^3, PM2.5: 27ug/m^3, Humid: 57.00%, temp: 26.80C
+16:02, PM10: 115ug/m^3, PM2.5: 115ug/m^3, Humid: 52.00%, temp: 29.40C
+16:02, PM10: 32ug/m^3, PM2.5: 32ug/m^3, Humid: 52.00%, temp: 29.50C

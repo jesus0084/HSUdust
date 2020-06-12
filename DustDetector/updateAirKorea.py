@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import pandas
 stationName = '성북구'
 M='&stationName='+stationName+'&dataTerm=month&pageNo=1&numOfRows=10'
-key='your key'
+key='vxzcqtYtji%2BOm9SAYjToHIidQDa3U%2Fc9QVLcxD2iEpILXVjyvsrGR15rFBrBv7yJVkxK8XitTLjw7HoJhyxDOA%3D%3D'
 url='http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?'+M+'&ServiceKey='+key+'&ver=1.3'
 
 
