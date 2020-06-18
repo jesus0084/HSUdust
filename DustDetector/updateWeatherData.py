@@ -11,7 +11,7 @@ def updateOutdoorWeather():
 	nowMin = time.strftime('%M',time.localtime(time.time()))
 	x = '60'
 	y = '127'
-	key='vxzcqtYtji%2BOm9SAYjToHIidQDa3U%2Fc9QVLcxD2iEpILXVjyvsrGR15rFBrBv7yJVkxK8XitTLjw7HoJhyxDOA%3D%3D'
+	key='your key'
 
 	if(int(nowHour)==0 and int(nowMin)<41):
 		nowDate=int(nowDate)-1
@@ -20,6 +20,22 @@ def updateOutdoorWeather():
 		nowTime='00'+str(nowMin)
 	elif(int(nowHour)==2 and int(nowMin)<41):
 		nowTime='01'+str(nowMin)
+	elif(int(nowHour)==3 and int(nowMin)<41):
+		nowTime='02'+str(nowMin)
+	elif(int(nowHour)==4 and int(nowMin)<41):
+		nowTime='03'+str(nowMin)
+	elif(int(nowHour)==5 and int(nowMin)<41):
+		nowTime='04'+str(nowMin)
+	elif(int(nowHour)==6 and int(nowMin)<41):
+		nowTime='05'+str(nowMin)
+	elif(int(nowHour)==7 and int(nowMin)<41):
+		nowTime='06'+str(nowMin)
+	elif(int(nowHour)==8 and int(nowMin)<41):
+		nowTime='07'+str(nowMin)
+	elif(int(nowHour)==9 and int(nowMin)<41):
+		nowTime='08'+str(nowMin)
+	elif(int(nowHour)==10 and int(nowMin)<41):
+		nowTime='09'+str(nowMin)
 	elif(int(nowMin)<41):
 		nowHour=int(nowHour)-1
 		nowTime = str(nowHour)+str(nowMin)

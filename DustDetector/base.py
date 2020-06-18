@@ -9,11 +9,19 @@ from updateWeatherData import updateOutdoorWeather
 from logger import indoorLogging
 from logUploader import uploadLog
 import os
-
-import sys
-sys.setrecursionlimit(100000)
+import RPi.GPIO as GPIO
+import pygame
 
 win=Tk()
+pygame.init()
+audio = pygame.mixer.Sound("/home/pi/Desktop/DustDetector/refresh.wav")
+soundEnabled = True
+pushsw=17
+indoorDustTotalGrade=0
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+GPIO.setup(pushsw,GPIO.IN,GPIO.PUD_UP)
 
 def exitProgram():
 	print("Entering Maintenance Mode!")
@@ -25,7 +33,16 @@ def turnOff():
 	win.quit()
 	os.system("sudo shutdown -h now")
 	return 0
-	
+
+def soundToggle():
+	global soundEnabled
+	if(soundEnabled==True):
+		soundEnabled = not soundEnabled
+		soundButton.configure(text = "음소거")
+	elif(soundEnabled==False):
+		soundEnabled = not soundEnabled
+		soundButton.configure(text="음성안내")
+
 def updateIndoorData():
 	indoorDataRaw = updateArdData()
 	indoorDataParse = indoorDataRaw.decode().split(',')
@@ -52,21 +69,25 @@ def updateIndoorData():
 		indoorPM10Grade = 3
 	else:
 		indoorPM10Grade = 4
+	global indoorDustTotalGrade
 	indoorDustTotalGrade = max(indoorPM2Grade,indoorPM10Grade)
-	print(indoorDustTotalGrade)
 
 	if(indoorDustTotalGrade==1):
 		indoorDustImg.img=PhotoImage(file = '/home/pi/Desktop/DustDetector/good.gif')
 		indoorDustImg.config(image = indoorDustImg.img, bg='#404040')	
+		audio = pygame.mixer.Sound("/home/pi/Desktop/DustDetector/normal.wav")
 	elif(indoorDustTotalGrade==2):
 		indoorDustImg.img=PhotoImage(file = '/home/pi/Desktop/DustDetector/normal.gif')
 		indoorDustImg.config(image = indoorDustImg.img, bg='#404040')	
+		audio = pygame.mixer.Sound("/home/pi/Desktop/DustDetector/normal.wav")
 	elif(indoorDustTotalGrade==3):
 		indoorDustImg.img=PhotoImage(file = '/home/pi/Desktop/DustDetector/bad.gif')
 		indoorDustImg.config(image = indoorDustImg.img,bg='#404040')	
+		audio = pygame.mixer.Sound("/home/pi/Desktop/DustDetector/bad.wav")
 	elif(indoorDustTotalGrade==4):
 		indoorDustImg.img=PhotoImage(file = '/home/pi/Desktop/DustDetector/worst.gif')
 		indoorDustImg.config(image = indoorDustImg.img,bg='#404040')	
+		audio = pygame.mixer.Sound("/home/pi/Desktop/DustDetector/worst.wav")
 	else:
 		indoorDustImg.img=PhotoImage(file = '/home/pi/Desktop/DustDetector/hmm.gif')
 		indoorDustImg.config(image = indoorDustImg.img,bg='#404040')
@@ -173,19 +194,35 @@ def timeUpdate():
 	
 	if(nowSec=='00'):
 		updateIndoorData()
-		uploadLog()
+		#uploadLog()
 	if(nowMin=='00' and nowSec=='00'):
 		updateOutdoorDustData()
+		if(soundEnabled==True):
+			if(indoorDustTotalGrade==1):
+				audio = pygame.mixer.Sound("/home/pi/Desktop/DustDetector/good.wav")
+				audio.play()
+			elif(indoorDustTotalGrade==2):
+				audio = pygame.mixer.Sound("/home/pi/Desktop/DustDetector/normal.wav")
+				audio.play()
+			elif(indoorDustTotalGrade==3):
+				audio = pygame.mixer.Sound("/home/pi/Desktop/DustDetector/bad.wav")
+				audio.play()
+			else:
+				audio = pygame.mixer.Sound("/home/pi/Desktop/DustDetector/worst.wav")
+				audio.play()
 	if(nowMin=='45' and nowSec=='00'):
 		updateOutdoorWeatherData()
+	if GPIO.input(pushsw)==0:
+		exitProgram()
+		
 	threading.Timer(1,timeUpdate).start()
 
 def noticeUpdate():
 	noticeShow.pack(side="top", fill="x")
 	
-win.title("My First GUI")
+win.title("먼지안심")
 win.geometry("800x480")
-win.attributes("-fullscreen",True)
+win.attributes("-fullscreen",False)
 win.configure(bg='#404040')
 
 font = tkinter.font.Font(size=20)
@@ -207,6 +244,8 @@ exitButton = Button(win, text="종료",command=turnOff,height=1,width=5, bg='#40
 exitButton.place(x=720, y = 440)
 maintButton = Button(win,text="정비모드",command=exitProgram,height=1,width=5,bg='#404040',fg='#FFFFFF',highlightthickness=0)
 maintButton.place(x=5,y=50)
+soundButton = Button(win,text="음성안내",command=soundToggle,height=1,width=5,bg='#404040',fg='#FFFFFF',highlightthickness=0)
+soundButton.place(x=5,y=70)
 
 indoorDustShow = Label(win, text='내부 미세먼지 정보', font=font)
 indoorDustShow.configure(bg='#404040',fg='#FFFFFF')
@@ -252,7 +291,7 @@ timeShow = Label(win, text = '날짜 및 시간')
 timeShow.configure(bg='#404040', fg='#FFFFFF', font=font2)
 noticeShow = Label(win, text = '공지사항은 여기에 표시됩니다!', font=font2)
 noticeShow.configure(bg='#404040', fg='#FFFFFF')
-
+	
 updateIndoorData()
 showAll()
 timeUpdate()
