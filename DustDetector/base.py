@@ -11,6 +11,7 @@ from logUploader import uploadLog
 import os
 import RPi.GPIO as GPIO
 import pygame
+from updateNotification import getNotification
 
 win=Tk()
 pygame.init()
@@ -194,7 +195,7 @@ def timeUpdate():
 	
 	if(nowSec=='00'):
 		updateIndoorData()
-		#uploadLog()
+		uploadLog()
 	if(nowMin=='00' and nowSec=='00'):
 		updateOutdoorDustData()
 		if(soundEnabled==True):
@@ -214,11 +215,14 @@ def timeUpdate():
 		updateOutdoorWeatherData()
 	if GPIO.input(pushsw)==0:
 		exitProgram()
-		
+	noticeUpdate()	
 	threading.Timer(1,timeUpdate).start()
 
 def noticeUpdate():
 	noticeShow.pack(side="top", fill="x")
+	noticeShow.configure(text = getNotification())
+	
+	
 	
 win.title("먼지안심")
 win.geometry("800x480")
@@ -298,6 +302,6 @@ timeUpdate()
 noticeUpdate()
 updateOutdoorDustData()
 updateOutdoorWeatherData()
-#uploadLog()
+uploadLog()
 
 mainloop()

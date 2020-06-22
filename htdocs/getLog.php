@@ -7,7 +7,7 @@
 <?php
 
 ini_set("display_errors", "1");
-$uploaddir = 'C:\Bitnami\wampstack-7.4.6-1\apache2\htdocs\Dust\Logs\\';
+$uploaddir = 'C:\Bitnami\wampstack-7.4.6-1\apache2\htdocs\Logs\\';
 $uploadfile = $uploaddir . basename($_FILES['userfile']['name']);
 echo '<pre>';
 if (move_uploaded_file($_FILES['userfile']['tmp_name'], $uploadfile)) {
