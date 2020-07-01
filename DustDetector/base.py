@@ -12,6 +12,7 @@ import os
 import RPi.GPIO as GPIO
 import pygame
 from updateNotification import getNotification
+import os
 
 win=Tk()
 pygame.init()
@@ -226,7 +227,7 @@ def noticeUpdate():
 	
 win.title("먼지안심")
 win.geometry("800x480")
-win.attributes("-fullscreen",False)
+win.attributes("-fullscreen",True)
 win.configure(bg='#404040')
 
 font = tkinter.font.Font(size=20)
@@ -246,8 +247,10 @@ showOutdoorButton.place(x=700, y=280)
 
 exitButton = Button(win, text="종료",command=turnOff,height=1,width=5, bg='#404040', fg='#FFFFFF', highlightthickness=0)
 exitButton.place(x=720, y = 440)
-maintButton = Button(win,text="정비모드",command=exitProgram,height=1,width=5,bg='#404040',fg='#FFFFFF',highlightthickness=0)
-maintButton.place(x=5,y=50)
+
+#maintButton = Button(win,text="정비모드",command=exitProgram,height=1,width=5,bg='#404040',fg='#FFFFFF',highlightthickness=0)
+#maintButton.place(x=5,y=50)
+
 soundButton = Button(win,text="음성안내",command=soundToggle,height=1,width=5,bg='#404040',fg='#FFFFFF',highlightthickness=0)
 soundButton.place(x=5,y=70)
 
@@ -295,7 +298,7 @@ timeShow = Label(win, text = '날짜 및 시간')
 timeShow.configure(bg='#404040', fg='#FFFFFF', font=font2)
 noticeShow = Label(win, text = '공지사항은 여기에 표시됩니다!', font=font2)
 noticeShow.configure(bg='#404040', fg='#FFFFFF')
-	
+
 updateIndoorData()
 showAll()
 timeUpdate()
